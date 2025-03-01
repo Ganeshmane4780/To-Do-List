@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: rgb(205, 229, 118);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 2px 3px 4px black;
+        }
+        h1 {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 620px;
+            padding: 10px;
+            border: 1px solid #131212;
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #248d3b;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0a0a0a;
+        }
+        li.completed {
+            text-decoration: line-through;
+            color: #ef0e0e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <input type="text" id="taskInput" placeholder="Add a new task...">
+        <br><br>
+        <button id="addTaskBtn">Add Task</button>
+        <ul id="taskList"></ul>
+    </div>
+    <script>
+        // Function to add a new task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskValue = taskInput.value.trim();
+
+            if (taskValue) {
+                const taskList = document.getElementById('taskList');
+
+                // Create a new list item
+                const li = document.createElement('li');
+                li.textContent = taskValue;
+
+                // Toggle completion status on click
+                li.addEventListener('click', () => {
+                    li.classList.toggle('completed');
+                });
+
+                // Create and append the remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'Remove';
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    taskList.removeChild(li);
+                });
+
+                li.appendChild(removeBtn);
+                taskList.appendChild(li);
+
+                // Clear the input field
+                taskInput.value = '';
+            }
+        }
+
+        
+        document.getElementById('addTaskBtn').addEventListener('click', addTask);
+    </script>
+</body>
+</html>
