@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
     <style>
+        /* Basic reset */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
         }
+
+        /* Container styling */
         .container {
             max-width: 650px;
             margin: auto;
@@ -19,15 +22,22 @@
             border-radius: 5px;
             box-shadow: 2px 3px 4px black;
         }
+
+        /* Heading */
         h1 {
             text-align: center;
         }
+
+        /* Input field */
         input[type="text"] {
-            width: 620px;
+            width: calc(100% - 22px);
             padding: 10px;
             border: 1px solid #131212;
             border-radius: 3px;
+            margin-bottom: 10px;
         }
+
+        /* Buttons */
         button {
             padding: 10px;
             border: none;
@@ -35,24 +45,48 @@
             background-color: #28a745;
             color: white;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
+
         button:hover {
-            background-color: #248d3b;
+            background-color: #218838;
+            transform: scale(1.05);
         }
+
+        /* Task list */
         ul {
             list-style-type: none;
             padding: 0;
         }
+
         li {
             padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #0a0a0a;
+            transition: background-color 0.3s ease;
         }
+
+        li:hover {
+            background-color: #e9e9e9;
+        }
+
+        /* Completed task */
         li.completed {
             text-decoration: line-through;
             color: #ef0e0e;
+        }
+
+        /* Remove button */
+        .remove-btn {
+            background-color: #dc3545;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -60,46 +94,61 @@
     <div class="container">
         <h1>To-Do List</h1>
         <input type="text" id="taskInput" placeholder="Add a new task...">
-        <br><br>
         <button id="addTaskBtn">Add Task</button>
         <ul id="taskList"></ul>
     </div>
     <script>
-        // Function to add a new task
-        function addTask() {
+        document.addEventListener('DOMContentLoaded', () => {
             const taskInput = document.getElementById('taskInput');
-            const taskValue = taskInput.value.trim();
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskList = document.getElementById('taskList');
 
-            if (taskValue) {
-                const taskList = document.getElementById('taskList');
+            // Load tasks from localStorage
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.forEach(task => renderTask(task.text, task.completed));
 
-                // Create a new list item
+            // Add new task
+            addTaskBtn.addEventListener('click', () => {
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    renderTask(taskText);
+                    tasks.push({ text: taskText, completed: false });
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    taskInput.value = '';
+                }
+            });
+
+            function renderTask(text, completed = false) {
                 const li = document.createElement('li');
-                li.textContent = taskValue;
+                li.textContent = text;
+                if (completed) {
+                    li.classList.add('completed');
+                }
 
-                // Toggle completion status on click
+                // Toggle completion status
                 li.addEventListener('click', () => {
                     li.classList.toggle('completed');
+                    const taskIndex = tasks.findIndex(task => task.text === text);
+                    tasks[taskIndex].completed = !tasks[taskIndex].completed;
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
                 });
 
-                // Create and append the remove button
+                // Remove task
                 const removeBtn = document.createElement('button');
                 removeBtn.textContent = 'Remove';
+                removeBtn.classList.add('remove-btn');
                 removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); 
+                    e.stopPropagation();
                     taskList.removeChild(li);
+                    const taskIndex = tasks.findIndex(task => task.text === text);
+                    tasks.splice(taskIndex, 1);
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
                 });
 
                 li.appendChild(removeBtn);
                 taskList.appendChild(li);
-
-                // Clear the input field
-                taskInput.value = '';
             }
-        }
-
-        
-        document.getElementById('addTaskBtn').addEventListener('click', addTask);
+        });
     </script>
 </body>
 </html>
